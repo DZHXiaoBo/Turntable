@@ -28,7 +28,7 @@
 			<canvas id="canvas_main">
 				您的浏览器不支持 HTML5 canvas 标签。
 			</canvas>
-			<canvas id="canvas_button" class="myButton">
+			<canvas id="canvas_button" class="myButton" style="cursor:pointer">
 				您的浏览器不支持 HTML5 canvas 标签。
 			</canvas>
 		</div>
@@ -113,7 +113,7 @@
 					console.log("angle：" + angle)
 					let n = angle / (360 / valueArray.length)
 					console.log("转到第几个了：" + n)
-					 
+
 					n = n + ""
 					var haha = "0." + n.split(".")[1]
 					if (haha <= 0.05 || haha >= 0.95) {
