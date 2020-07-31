@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>转盘大抽奖</title>
+		<script src="./js/draw.js"></script>
+		<style type="text/css">
+			#canvas_main {
+				-webkit-transform: all 3s ease;
+				transition: all 3s ease;
+			}
+
+			.container {
+				display: inline-block;
+				position: relative;
+			}
+
+			#canvas_button {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				/* margin: -48px 0 0 -40px; */
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container" style="width: 400px; height: 400px;">
+			<canvas id="canvas_main">
+				您的浏览器不支持 HTML5 canvas 标签。
+			</canvas>
+			<canvas id="canvas_button" class="myButton">
+				您的浏览器不支持 HTML5 canvas 标签。
+			</canvas>
+		</div>
+		<script type="text/javascript">
+			//中心点
+			const centerPointMainX = 200
+			const centerPointMainY = 200
+			//外圆半径
+			const rOut = centerPointMainX
+			//外圆与内圆的间距
+			const space = rOut * 0.05
+			//内圆半径
+			const rIn = rOut - space
+			//内圆的直径
+			const dIn = rIn * 2
+			//按钮外圆半径
+			const rOutButton = rOut * 0.2
+			//按钮外圆与内圆的间距
+			const spaceButton = rOutButton * 0.1
+			//按钮内圆半径
+			const rInButton = rOutButton - spaceButton
+			//转盘画布
+			const canvasMain = document.getElementById("canvas_main");
+			//转盘画布的上下文
+			const canvasMainCtx = canvasMain.getContext("2d");
+			//画布的宽度和外圆宽度一样
+			canvasMain.width = rOut * 2
+			//画布的高度和宽度一样，为正方形
+			canvasMain.height = canvasMain.width
+			const valueArray = [{
+				"title": "一等奖",
+				"color": "#E7B872"
+			}, {
+				"title": "二等奖",
+				"color": "#CF7069"
+			}, {
+				"title": "三等奖",
+				"color": "#E7B872"
+			}, {
+				"title": "四等奖",
+				"color": "#CF7069"
+			}, {
+				"title": "五等奖",
+				"color": "#E7B872"
+			}, {
+				"title": "六等奖",
+				"color": "#CF7069"
+			}, {
+				"title": "七等奖",
+				"color": "#E7B872"
+			}, {
+				"title": "八等奖",
+				"color": "#CF7069"
+			}]
+			//外圆
+			drawCircle(canvasMainCtx, centerPointMainX, centerPointMainY, rOut, "#E5B566")
+			//内圆不需要画了，由扇形填充
+			//drawCircle(canvasMainCtx, centerPointMainX, centerPointMainY, rIn, "#E6B871")
+			//分割线不需要画了，由扇形填充
+			//drawDivider()
+			//画扇形+上面的字
+			drawSector(canvasMainCtx, valueArray, centerPointMainX, centerPointMainY, rIn, (rOut - rOutButton) / 2 + rOutButton)
+			//画转盘边缘的小圆点
+			drawPoint(canvasMainCtx, rIn + 4, centerPointMainX, centerPointMainY, space / 3, valueArray.length)
+			drawCenterButton()
+
+			function drawCenterButton() {
+				//中间按钮的画布
+				const canvasButton = document.getElementById("canvas_button");
+				//中间按钮画布的上下文
+				const canvasButtonCtx = canvasButton.getContext("2d");
+				let currentAngle = 0
+				canvasButton.addEventListener('click', function(e) {
+					let number = 10 + Math.random() * 5;
+					console.log("随机数：" + number)
+					currentAngle += number * 360
+					console.log("currentAngle：" + currentAngle)
+					// canvasMain.style.transform = 'rotate(45deg)';
+					canvasMain.style.transform = 'rotate(' + currentAngle + 'deg)'
+
+					let angle = currentAngle % 360
+					console.log("angle：" + angle)
+					let n = angle / (360 / valueArray.length)
+					console.log("转到第几个了：" + n)
+					 
+					n = n + ""
+					var haha = "0." + n.split(".")[1]
+					if (haha <= 0.05 || haha >= 0.95) {
+						setTimeout(function() {
+							alert("重新转一下")
+						}, 3000)
+					} else {
+						//向下取整
+						let index = Math.floor(n)
+						console.log("恭喜你获得:" + valueArray[index].title)
+
+						setTimeout(function() {
+							alert("恭喜你获得" + valueArray[index].title)
+							// console.log("angle：" + angle)
+						}, 3000)
+					}
+
+				})
+
+				// 按钮上的指示针高度
+				const triangleHeight = rOutButton / 2
+				//按钮与指针底部重叠部分
+				const padding = triangleHeight / 5
+				//指针三角形底边长度
+				const trianglLength = triangleHeight / 2
+				//按钮画布的宽高
+				canvasButton.width = rOutButton * 2
+				canvasButton.height = rOutButton * 2 + (triangleHeight - padding)
+				//按钮下面圆形的坐标点
+				const centerPointX = canvasButton.width / 2
+				const centerPointY = canvasButton.height - rOutButton
+				//画布的位置，这里有点问题
+				const left = rOut - rOutButton
+				const top = centerPointMainX - canvasButton.height + rOutButton
+
+				// canvasButton.style = " position: absolute; left:" + left + "px;top:" + top + "px";
+				canvasButton.style.marginLeft = -(canvasButton.width / 2) + "px"
+				canvasButton.style.marginTop = -(canvasButton.height / 2) + "px"
+
+				console.log("大圆半径：" + rOut)
+				console.log("小圆半径：" + rOutButton)
+				console.log("left：" + left)
+				console.log("top：" + top)
+				console.log("canvasMain.width：" + canvasMain.width)
+				console.log("canvasButton.width：" + canvasButton.width)
+				console.log("canvasButton.marginLeft：" + canvasButton.marginLeft)
+				console.log("canvasButton.marginTop：" + canvasButton.marginTop)
+
+
+				//按钮上方的指针
+				drawableButtonTopPoint(canvasButtonCtx, centerPointX, centerPointY, trianglLength, triangleHeight)
+				//按钮的白色外圆
+				drawCircle(canvasButtonCtx, centerPointX, centerPointY, rOutButton, "white")
+				// //按钮内圆
+				drawCircle(canvasButtonCtx, centerPointX, centerPointY, rInButton, "#E28A62")
+				// //按钮上面的弧度
+				drawButtonStyle(canvasButtonCtx, centerPointX, centerPointY);
+			}
+
+			/**
+			 * 画按钮上面的弧度
+			 */
+			function drawButtonStyle(ctx, centerPointX, centerPointY) {
+				drawableButtonText(ctx, "GO", centerPointX, centerPointY)
+				//字旁边圆弧的半径
+				var rArc = rInButton - spaceButton
+				ctx.lineWidth = spaceButton / 2
+				drawArc(ctx, centerPointX, centerPointY, rArc, -180 * Math.PI / 180, -125 * Math.PI / 180, false)
+				drawArc(ctx, centerPointX, centerPointY, rArc, -115 * Math.PI / 180, -95 * Math.PI / 180, false)
+				drawArc(ctx, centerPointX, centerPointY, rArc, -86 * Math.PI / 180, -80 * Math.PI / 180, false)
+			}
+
+			/**
+			 * 画按钮上的指示针
+			 */
+			function drawableButtonTopPoint(ctx, centerPointX, centerPointY, trianglLength, height) {
+				//指示针，左三角形
+				ctx.beginPath();
+				ctx.moveTo(centerPointX, 0)
+				ctx.lineTo(centerPointX - trianglLength, height)
+				ctx.lineTo(centerPointX, height)
+				ctx.closePath()
+				ctx.fillStyle = "#E48959"
+				ctx.fill();
+
+				//指示针，右三角形
+				ctx.beginPath();
+				ctx.moveTo(centerPointX, 0)
+				ctx.lineTo(centerPointX + trianglLength, height)
+				ctx.lineTo(centerPointX, height)
+				ctx.closePath()
+				ctx.fillStyle = "#DD726D"
+				ctx.fill();
+			}
+
+
+
+			/**
+			 * 画中间的分割线
+			 */
+			function drawDivider() {
+				//中间的横线
+				drawLine(canvasMainCtx, space, centerPointMainX, space + dIn, centerPointMainY)
+				//中间的竖线
+				drawLine(canvasMainCtx, centerPointMainX, space, centerPointMainY, space + dIn)
+				var sideLength = Math.sqrt(rIn * rIn / 2)
+				var margin = centerPointMainX - sideLength
+				//左斜线
+				drawLine(canvasMainCtx, margin, margin, centerPointMainX + sideLength, centerPointMainY + sideLength)
+				//右斜线
+				drawLine(canvasMainCtx, centerPointMainX + sideLength, margin, margin, centerPointMainY + sideLength)
+			}
+		</script>
+	</body>
+</html>
